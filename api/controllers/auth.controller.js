@@ -13,7 +13,7 @@ const register = catchAsync(async (req, res) => {
   const { body } = req;
   const user = await UserService.createUser(body);
   const tokens = await TokenService.generateAuthTokens(user._id);
-  responseHandler(res, { user, tokens });
+  responseHandler(req, res, { user, tokens });
 });
 
 const loginWithEmail = catchAsync(async (req, res) => {
@@ -22,7 +22,7 @@ const loginWithEmail = catchAsync(async (req, res) => {
   } = req;
   const user = await AuthService.loginWithEmail(email, password);
   const tokens = await TokenService.generateAuthTokens(user._id);
-  responseHandler(res, { user, tokens });
+  responseHandler(req, res, { user, tokens });
 });
 
 const logout = catchAsync(async (req, res) => {
@@ -30,12 +30,12 @@ const logout = catchAsync(async (req, res) => {
     body: { refreshToken },
   } = req;
   await AuthService.logout(refreshToken);
-  responseHandler(res, 'Successfuly logged out.');
+  responseHandler(req, res, 'Successfuly logged out.');
 });
 
 const refreshTokens = catchAsync(async (req, res) => {
   const tokens = await AuthService.refreshAuthToken(req.body.refreshToken);
-  responseHandler(res, { ...tokens });
+  responseHandler(req, res, { ...tokens });
 });
 
 export default {

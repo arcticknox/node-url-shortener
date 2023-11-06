@@ -46,7 +46,7 @@ const logger = createLogger({
       maxSize: '20m',
       maxFiles: '7d',
       utc: true,
-      dirname: process.env.APP_LOGS_DIRNAME || '/tmp/webapp',
+      dirname: process.env.APP_LOGS_DIRNAME || '/tmp/url-shortener-server',
     }),
     // Error logs
     new transports.DailyRotateFile({
@@ -57,7 +57,7 @@ const logger = createLogger({
       maxSize: '20m',
       maxFiles: '7d',
       utc: true,
-      dirname: process.env.APP_ERROR_LOGS_DIRNAME || '/tmp/webapp',
+      dirname: process.env.APP_ERROR_LOGS_DIRNAME || '/tmp/url-shortener-server',
     }),
     new transports.Console({
       format: process.env.NODE_ENV !== 'production' ? format.combine(
