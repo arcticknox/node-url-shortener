@@ -10,19 +10,12 @@ const verifyCallback = (req, resolve, reject) => async (err, user, info) => {
   resolve();
 };
 
-/**
- * JWT Auth Middleware
- */
-const authMiddleware= (req, res, next) => {
-  new Promise((resolve, reject) => {
-    passport.authenticate(
-        'jwt',
-        { session: false },
-        verifyCallback(req, resolve, reject),
-    )(req, res, next);
+const authMiddleware = () => async (req, res, next) => {
+  return new Promise((resolve, reject) => {
+    passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject))(req, res, next);
   })
       .then(() => next())
-      .catch((error) => next(error));
+      .catch((err) => next(err));
 };
 
 export default authMiddleware;
