@@ -3,6 +3,7 @@ import logger from './logger/index.js';
 import mongoose from 'mongoose';
 import centralErrorHandler from './api/utils/centralErrorHandler.js';
 import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import { initRedisClient } from './redis/index.js';
 dotenv.config();
 
 const port = process.env.APP_PORT || 3000;
@@ -20,6 +21,7 @@ const initMongoConn = () => {
 
 const server = app.listen(port, async () => {
   initMongoConn();
+  initRedisClient();
   logger.info(`Server listening on port ${port}`);
 });
 
