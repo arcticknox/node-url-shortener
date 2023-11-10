@@ -3,6 +3,7 @@ import UserModel from '../models/user.model.js';
 import AppError from '../utils/AppError.js';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import tierService from './tier.service.js';
 /**
  * Create user
  * @param {Object} userInfo: user info to be saved to create user
@@ -12,6 +13,7 @@ const createUser = async (userInfo) => {
   const isEmailTaken = await UserModel.isEmailTaken(email);
   if (isEmailTaken) throw new AppError(httpStatus.BAD_REQUEST, 'Email already taken');
   const user = await UserModel.create({ ...userInfo });
+  await tierService.associateUserWithTier(user._id);
   return user;
 };
 

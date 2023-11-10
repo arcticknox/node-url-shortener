@@ -4,8 +4,24 @@ import genShortHash from '../utils/genShortHash.js';
 import AppError from '../utils/AppError.js';
 import httpStatus from 'http-status';
 import { redis } from '../../redis/index.js';
+import UserModel from '../models/user.model.js';
+import TierModel from '../models/tier.model.js';
+import logger from '../../logger/index.js';
+
+const checkTierLimits = async (userId) => {
+  const userInfo = UserModel.findOne({ _id: userId });
+  const userTierId = _.get(userInfo, 'tierId');
+  const tierInfo = await TierModel.findOne({ _id: userTierId });
+  const tierLimits = _.get(tierInfo, 'requestsLimit', 100);
+  const timeNow = Date.now();
+  const monthUsage = timeNow - (30 * 24 * 60 * 60 * 1000);
+  const numberOfRequests = await UrlModel.countDocuments({ userId, createdAt: { $gte: monthUsage, $lt: timeNow } });
+  if (numberOfRequests >= tierLimits) throw new AppError(400, 'Request limit reached for the tier');
+  logger.info(`User current tier limits: ${numberOfRequests}/${tierLimits}`);
+};
 
 const generateShortUrl = async (originalUrl, userId) => {
+  checkTierLimits(userId);
   const shortHash = await genShortHash(`${originalUrl}${userId}`);
   const checkExistingHash = await UrlModel.findOne({ shortHash });
   if (checkExistingHash) {

@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema(
         trim: true,
         minlength: 8,
       },
+      tierId: {
+        type: String,
+      },
     },
     { timestamps: true, versionKey: false },
 );
