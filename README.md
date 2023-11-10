@@ -15,7 +15,7 @@
   ```
 - Set config from .env
 - Make sure mongodb and redis are up and connection settings are in env
-- Run terraform plan to review the changes that Terraform will make:
+- Run
   ```
   npm start
   ```
