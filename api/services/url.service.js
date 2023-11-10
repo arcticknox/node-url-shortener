@@ -8,6 +8,10 @@ import UserModel from '../models/user.model.js';
 import TierModel from '../models/tier.model.js';
 import logger from '../../logger/index.js';
 
+/**
+ * Check tier limits for user
+ * @param {string} userId
+ */
 const checkTierLimits = async (userId) => {
   const userInfo = UserModel.findOne({ _id: userId });
   const userTierId = _.get(userInfo, 'tierId');
@@ -20,10 +24,15 @@ const checkTierLimits = async (userId) => {
   logger.info(`User current tier limits: ${numberOfRequests}/${tierLimits}`);
 };
 
+/**
+ * Shorten url
+ * @param {string} originalUrl
+ * @param {string} userId
+ */
 const generateShortUrl = async (originalUrl, userId) => {
-  checkTierLimits(userId);
+  await checkTierLimits(userId);
   const shortHash = await genShortHash(`${originalUrl}${userId}`);
-  const checkExistingHash = await UrlModel.findOne({ shortHash });
+  const checkExistingHash = await UrlModel.findOne({ shortHash, isDeleted: false });
   if (checkExistingHash) {
     shortHash = await genShortHash(`${originalUrl}${userId}`);
   }
@@ -36,6 +45,11 @@ const getShortUrls = async (userId) => {
   return UrlModel.find({ userId });
 };
 
+/**
+ * Resolves shortened url
+ * @param {string} shortHash
+ * @returns {string}
+ */
 const resolveShortUrl = async (shortHash) => {
   // Check cache
   const originalUrl = await redis.get(shortHash);
@@ -45,6 +59,11 @@ const resolveShortUrl = async (shortHash) => {
   return _.get(urlInfo, 'originalUrl');
 };
 
+/**
+ * Delete short url
+ * @param {string} _id
+ * @param {string} userId
+ */
 const deleteShortUrl = async (_id, userId) => {
   const urlInfo = await UrlModel.findByIdAndUpdate({ _id, userId }, { isDeleted: true } );
   // Delete from cache

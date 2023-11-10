@@ -23,7 +23,7 @@ const createUser = async (userInfo) => {
  * returns user info
  */
 const fetchUserById = async (_id) => {
-  const findBy = { '_id': mongoose.Types.ObjectId(_id) };
+  const findBy = { '_id': mongoose.Types.ObjectId(_id), 'isDeleted': false };
   const userInfo = await UserModel.findOne(findBy);
   if (!userInfo) throw new AppError(httpStatus.BAD_REQUEST, 'Invalid user indentifier provided');
   return userInfo;

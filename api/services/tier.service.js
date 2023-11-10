@@ -9,6 +9,10 @@ const checkUserQualifiedForTier = (userId) => {
   return 'tier-3';
 };
 
+/**
+ * Associate tier with a user
+ * @param {String} userId
+ */
 const associateUserWithTier = async (userId) => {
   const tier = checkUserQualifiedForTier(userId);
   const tierInfo = await TierModel.findOne({ name: tier });
@@ -17,7 +21,6 @@ const associateUserWithTier = async (userId) => {
     logger.error('Tier requested not found: ', tier);
     return;
   }
-  console.log(userId, tierId);
   await UserModel.findByIdAndUpdate(userId, { tierId });
 };
 
